@@ -1,0 +1,242 @@
+#!/bin/bash -e
+
+# a list of open ports
+# left side is what your computer sees, right side is what the docker container sees
+ports=( 6667:6667 6697:6697 )
+
+# the name to use for running/stopping/starting the container
+container=wetfish-irc
+# the name to use when constructing/removing/running the image
+image=wetfish-irc
+
+# this url is where Docker fetches the rest of the inspIRCd source code when building its image
+git_source_url=https://github.com/inspircd/inspircd.git
+
+################################################################################
+
+# FUNCTIONS
+
+# reliably returns the dir this script is in
+getDir() {
+	local SOURCE DIR
+	SOURCE="${BASH_SOURCE[0]}"
+	while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+		DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+		SOURCE="$(readlink "$SOURCE")"
+		[[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+	done
+	( cd -P "$( dirname "$SOURCE" )" && pwd )
+}
+
+repoIsInitialized() {
+	[ -d conf-private -o -d .conf-old ]
+}
+
+# checks for any merge conflict markers in any files in the specified directory
+confIsValid() {
+	local f
+
+	for f in "$1"/*; do
+		if grep -qo '=======' "$f"; then
+			return 1
+		fi
+	done
+
+	return 0
+}
+
+# does whatever needs to be done after this repository is 'git clone'd
+initRepo() {
+	repoIsInitialized && { echo "$0: This instance has already been initialized!"; exit 1; }
+
+	# conf is split, readied for merging
+	cp -r conf-public conf-private
+	cp -r conf-public .conf-old
+
+	echo "$0: Initialized the repository."
+}
+
+mergePrivate() {
+	local f F
+	repoIsInitialized || { echo "$0: You need to initialize the repository first."; exit 1; }
+
+	echo "$0: Attempting to merge conf-public into conf-private..."
+	mkdir .conf-merged
+
+	# merge conf-public and conf-private
+	cd conf-public; F=(*); cd - >/dev/null
+	for f in "${F[@]}"; do
+		diff3 -m conf-public/"$f" .conf-old/"$f" conf-private/"$f" >> .conf-merged/"$f" || echo "$0: Merge conflict produced in 'conf-private/$f'"
+		if [ -x conf-public/"$f" ]; then
+			chmod +x .conf-merged/"$f"
+		fi
+	done
+
+	# make sure the merge was sucessful
+	[ "$(ls conf-private)" != "$(ls .conf-merged)" ] && { echo "$0: Merge failed!"; exit 1; }
+	echo "$0: Sucessfully performed the merge!"
+
+	# swap out the old conf-private for the newly created one
+	rm -r conf-private
+	mv .conf-merged conf-private
+
+	# note that any new changes to the conf-public folder have been merged, if any were made
+	# this is accomplished simply by updating the .conf-old folder to equal conf-public
+	echo "$0: Recording changes made in conf-public to .conf-old..."
+	rm -r .conf-old
+	cp -r conf-public .conf-old
+
+	confIsValid conf-private &&
+	echo "$0: No merge conflicts created." ||
+	echo "$0: Some merge conflicts created in conf-private." &&
+	echo "Please resolve them before using conf-private in your server."
+}
+
+runImage() {
+	# format the ports to be used as arguments
+	local i=0; for port in "${ports[@]}"; do
+		ports[$i]="-p ${ports[$i]}"
+		((i++)) || :
+	done
+
+	docker run -d ${ports[@]} --name "$container" "$image"
+}
+
+removeContainer() { docker rm -f "$container"; }
+removeImage() { docker rmi -f "$image"; }
+buildImage() { docker build --build-arg "REPOSITORY=$git_source_url" -t "$image" .; }
+startShell() { docker exec -tiu root "$container" /bin/sh; }
+attachToLog() { docker attach --sig-proxy=false "$container"; }
+startContainer() {
+	docker ps | grep -q '^[a-f0-9]\{12\} *'"$container" && echo "$0: The service is already running."; return 1
+
+	docker start "$container"
+
+}
+stopContainer() {
+	docker ps | grep -q '^[a-f0-9]\{12\} *'"$container" || echo "$0: The service is already stopped."; return 1
+
+	docker start "$container"
+
+}
+
+# does the minimum required to get the server running
+smartStart() {
+	# if container exists and is running, tell user, return error
+	if docker ps | grep -q '^[a-f0-9]\{12\} *'"$container"; then
+		echo "$0: The server is already running!"; return 1
+	# if container exists and is stopped, start it, return 0
+	elif docker container ls -a | grep -q '^[a-f0-9]\{12\} *'"$container"; then
+		docker start "$container"
+	# if image exists but container does not, run container
+	elif docker image ls | grep -q "^$image"' \{1,\}'; then
+		runImage
+	# if the private conf still has merge conflicts in it, tell user, return 1
+	elif ! confIsValid conf-private; then
+		echo "$0: The server cannot be started because your private"
+		echo "configuration still has merge conflicts in it."; return 1
+	# if image does not exist but priv-conf does, build image, run it
+	elif repoIsInitialized; then
+		buildImage && runImage
+	# if priv-conf does not exist, init, build image, run it
+	else
+		initRepo && buildImage && runImage
+	fi
+}
+
+refresh() {
+	case "$1" in
+		''|container) removeContainer ;;
+		image) removeContainer && removeImage ;;
+		conf|config) removeContainer && removeImage && touch conf-private/".$RANDOM.tmp" ;;
+		modules) removeContainer && removeImage && touch modules/".$RANDOM.tmp";;
+		*) echo "$0: No command called 'refresh $1' exists."; return 1 ;;
+	esac
+	smartStart
+	rm */*.tmp
+}
+
+reset() {
+	removeContainer &&
+	removeImage &&
+	docker build --no-cache -t "$image" . &&
+	smartStart
+}
+
+# super-secret arbitrary-function-executor
+debug() {
+	if declare -F "$1" >/dev/null; then
+		"$@"
+	else
+		echo "$0: debug: The function '$1' does not exist."
+	fi
+}
+
+help() { cat <<C
+
+Usage: $0 - Start the irc server, despite state
+
+       $0 help - Display this message.
+       $0 log - Attach to inspIRCd's log.
+       $0 shell - Start a shell in the container.
+
+       $0 pause - Stop the container, saving state.
+       $0 stop - Stop and remove the container, discarding state.
+       $0 resume - Start the container, resuming from it's stopped state.
+
+     Refresh types, listed from softest to hardest:
+       $0 refresh - An alias for '$0 refresh container'.
+       $0 refresh container - Reset the container.
+       $0 refresh image - Rebuild the image using the cache.
+       $0 refresh conf - Rebuild the image using the cache, but ensure that the
+       conf is updated.
+       $0 refresh modules - Rebuild the image using the cache, but ensure that
+       the modules are recompiled.
+       $0 reset - Rebuild the image without the cache. This recompiles
+       everything, and takes about 6 minutes to complete.
+
+C
+}
+
+
+
+# STARTUP
+
+case "$1" in
+	help) help; exit 0;;
+esac
+
+# cd to the dir this script is in
+DIR=/"$(getDir)"
+cd "$DIR"
+
+# if this can't talk to docker, use sudo when calling it
+[ -w /var/run/docker.sock ] || docker() { sudo docker "$@"; }
+
+case "$1" in
+	debug) shift; debug "$@"; exit 0 ;;
+esac
+
+# init this repository if it isn't already initialized
+repoIsInitialized || initRepo
+
+
+
+# EXECUTION / UI
+
+case "$1" in
+	'') smartStart ;;
+	log) attachToLog ;;
+	shell) startShell ;;
+
+	pause) stopContainer ;;
+	stop) removeContainer ;;
+	resume) startContainer ;;
+
+	refresh) refresh "$2" ;;
+	reset) reset ;;
+
+	*) echo "$0: No command called '$1' exists."; help; exit 1 ;;
+esac
+
+exit 0
