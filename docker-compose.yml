@@ -1,0 +1,33 @@
+version: '3'
+services:
+  nginx:
+    image: bitnami/nginx
+    volumes:
+      - /home/debian/ircd2/nginx/conf/private/server_block.conf:/opt/bitnami/nginx/conf/server_blocks/my_server_block.conf:ro
+      - /home/debian/ircd2/certs:/certs
+    ports:
+      - "80:8000"
+      - "443:8443"
+    networks:
+      - app-network
+  inspircd:
+    image: inspircd:latest
+    volumes:
+      - /home/debian/ircd2/inspircd/conf:/inspircd/conf
+    ports:
+      - "6697:6697"
+    networks:
+      - app-network
+  thelounge:
+    image: thelounge:latest
+    volumes:
+      - /home/debian/ircd2/thelounge/conf/public:/thelounge/.thelounge
+      - /hom/debian/ircd2/thelounge/conf/private:/thelounge/.thelounge/private
+      - /home/debian/ircd2/thelounge/conf/public/themes:/thelounge/thelounge/public/themes
+    ports:
+      - "9000:9000"
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge

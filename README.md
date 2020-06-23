@@ -1,20 +1,29 @@
-# Usage
+# Dockerized InspIRCd & TheLounge
 
-Type './irc' to initialize the repository and start the server. Note that only 
-the first build will be slow -- succeeding builds will be much faster.
+After initial setup, ircdocker should be able to be run with a simple ``docker-compose up``
 
-Type './irc help' for a list of all commands for controlling the server.
+## Dependencies
+You'll want to install ``docker, docker-compose, certbot``
 
-To add/update a custom module, place its source code into the ./modules 
-directory, then run './irc refresh modules'. This will restart the server.
+#### Initial setup
+Clone this repo, ``git clone https://github.com/taeganb/ircdocker.git``
 
-To apply any changes made in the conf-private or conf-public directories, run 
-'./irc refresh conf'. This will also restart the server.
+Get LetsEncrypt certs, run ``certbot certonly``
 
-# Notes
+Make a directory within ~/ircdocker named /certs, ``mkdir certs``
 
-Some configuration options are available for the ./irc program. They're in the 
-first few lines of that program. Open it in a text editor to change them.
+Copy fullchain.pem and privkey.pem to ~/ircdocker/certs
 
-Dockerfile, entrypoint.sh, and all files inside of the conf-public directory 
-originally taken from [here](https://github.com/Adam-/inspircd-docker).
+Change permissions on /certs, ``chmod -R 640 certs/``
+
+Copy fullchain.pem and privkey.pem from ~/ircdocker/certs/ to /inspircd/conf/private and /thelounge/conf/private
+
+#### Building the images and stuff
+
+Move into ~/ircdocker/thelounge and build TheLounge, ``docker build -t thelounge:latest .``
+
+Move into ~/ircdocker/inspircd and build InspIRCd, ``docker build -t inspircd:latest .``
+
+#### Edting file paths and configurations
+
+You'll want to edit the InspIRCd, TheLounge, and Nginx private subdirectory config files to match your needs, as well as docker-compose.yml
