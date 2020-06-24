@@ -3,8 +3,8 @@ services:
   nginx:
     image: bitnami/nginx
     volumes:
-      - $HOME/irc.wetfish.net/nginx/conf/private/server_block.conf:/opt/bitnami/nginx/conf/server_blocks/my_server_block.conf:ro
-      - $HOME/irc.wetfish.net/certs:/certs
+      - ./nginx/conf/private/server_block.conf:/opt/bitnami/nginx/conf/server_blocks/my_server_block.conf:ro
+      - ./certs:/certs
     ports:
       - "80:8000"
       - "443:8443"
@@ -13,7 +13,7 @@ services:
   inspircd:
     image: inspircd:latest
     volumes:
-      - $HOME/irc.wetfish.net/inspircd/conf:/inspircd/conf
+      - ./inspircd/conf:/inspircd/conf
     ports:
       - "6697:6697"
     networks:
@@ -21,9 +21,9 @@ services:
   thelounge:
     image: thelounge:latest
     volumes:
-      - $HOME/irc.wetfish.net/thelounge/conf/public:/thelounge/.thelounge
-      - $HOME/irc.wetfish.net/thelounge/conf/private:/thelounge/.thelounge/private
-      - $HOME/irc.wetfish.net/thelounge/conf/public/themes:/thelounge/thelounge/public/themes
+      - ./thelounge/conf/public:/thelounge/.thelounge
+      - ./thelounge/conf/private:/thelounge/.thelounge/private
+      - ./thelounge/conf/public/themes:/thelounge/thelounge/public/themes
     ports:
       - "9000:9000"
     networks:
