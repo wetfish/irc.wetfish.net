@@ -6,8 +6,6 @@ After initial setup, ircdocker should be able to be run with a simple ``docker-c
 You'll want to install ``docker, docker-compose, certbot``
 
 #### Initial setup
-Clone this repo, ``git clone https://github.com/taeganb/ircdocker.git``
-
 Get LetsEncrypt certs, run ``certbot certonly``
 
 Make a directory within ~/ircdocker named /certs, ``mkdir certs``

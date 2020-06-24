@@ -226,8 +226,8 @@ module.exports = {
 	// }
 	// ```
 	defaults: {
-		name: "Network",
-		host: "your.website.tld",
+		name: "FishNet",
+		host: "irc.wetfish.net",
 		port: 6697,
 		password: "",
 		tls: true,
@@ -235,7 +235,7 @@ module.exports = {
 		nick: "Anonymous",
 		username: "Anonymous",
 		realname: "Anonymous",
-		join: "#main",
+		join: "#wetfish",
 	},
 
 	// ### `lockNetwork`
