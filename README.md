@@ -14,7 +14,7 @@ Copy fullchain.pem and privkey.pem to ~/irc.wetfish.net/certs
 
 Change permissions on /certs, ``chmod -R 640 certs/``
 
-Copy fullchain.pem and privkey.pem from ~/irc.wetfish.net/certs/ to /inspircd/conf/private and /thelounge/conf/private
+Copy fullchain.pem and privkey.pem from ~/irc.wetfish.net/certs to /inspircd/conf/private and /thelounge/conf/private
 
 #### Building the images and stuff
 
