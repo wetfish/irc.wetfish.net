@@ -10,17 +10,15 @@ RUN addgroup --system --gid 10000 thelounge
 RUN adduser --system --uid 10000 --home /thelounge/ --group thelounge
 USER thelounge
 WORKDIR /thelounge/
-USER root
 RUN git clone https://github.com/thelounge/thelounge
 WORKDIR /thelounge/thelounge/
 RUN yarn install
 RUN NODE_ENV=production yarn build
 RUN yarn link
-USER thelounge
 EXPOSE 9000
-USER root
 RUN mkdir /thelounge/.thelounge/
 RUN mkdir /thelounge/.thelounge/private
+USER root
 RUN chmod -R 644 /thelounge/.thelounge/
 USER thelounge
 ENTRYPOINT ["yarn", "start"]
