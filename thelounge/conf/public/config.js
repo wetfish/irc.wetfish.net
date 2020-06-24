@@ -100,7 +100,7 @@ module.exports = {
 	// Solarized would be `thelounge-theme-solarized`.
 	//
 	// This value is set to `"default"` by default.
-	theme: "thelounge-theme-zenburn",
+	theme: "zenburn",
 
 	// ### `prefetch`
 	//
