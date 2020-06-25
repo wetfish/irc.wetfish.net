@@ -6,8 +6,8 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/$
 RUN apt update && apt-get -y install git
 RUN npm install -g yarn
-RUN addgroup --system --gid 10000 thelounge
-RUN adduser --system --uid 10000 --home /thelounge/ --group thelounge
+RUN addgroup --system --gid 1000 thelounge
+RUN adduser --system --uid 1000 --home /thelounge/ --group thelounge
 USER thelounge
 WORKDIR /thelounge/
 RUN git clone https://github.com/thelounge/thelounge
@@ -18,7 +18,5 @@ RUN yarn link
 EXPOSE 9000
 RUN mkdir /thelounge/.thelounge/
 RUN mkdir /thelounge/.thelounge/private
-USER root
-RUN chmod -R 644 /thelounge/.thelounge/
 USER thelounge
 ENTRYPOINT ["yarn", "start"]
