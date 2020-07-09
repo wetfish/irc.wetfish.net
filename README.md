@@ -5,6 +5,8 @@ This has been tested and run on Debian 10 systems, dependencies may differ with 
 ## Dependencies
 Run ``sudo apt install docker docker-compose certbot git``
 
+If you don't already have certs, run ``certbot certonly``
+
 #### Initial setup - don't clone the repo, fishboot does it for you!
 Grab fishboot.sh and make it executable with ``chmod +x fishboot.sh``, then run it with ``sudo ./fishboot.sh``
 
