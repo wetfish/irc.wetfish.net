@@ -1,5 +1,5 @@
 FROM debian:buster
-MAINTAINER Taegan (taegan@csag.network)
+MAINTAINER Taegan (taeganavery@pm.me)
 RUN apt update && apt-get install -y apt-transport-https
 RUN apt-get -y install gnutls-bin certbot nodejs npm curl
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
@@ -7,7 +7,7 @@ RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources
 RUN apt update && apt-get -y install git
 RUN npm install -g yarn
 RUN addgroup --system --gid 1000 thelounge
-RUN adduser --system --uid 1000 --home /thelounge/ --group thelounge
+RUN adduser --system --uid 1337 --home /thelounge/ --group thelounge
 USER thelounge
 WORKDIR /thelounge/
 RUN git clone https://github.com/thelounge/thelounge
