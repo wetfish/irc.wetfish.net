@@ -1,5 +1,5 @@
 FROM debian:buster
-MAINTAINER Taegan (taeganavery@pm.me)
+MAINTAINER Fumiko (fumikoh@pm.me)
 RUN apt update && apt-get install -y apt-transport-https
 RUN apt-get -y install wget build-essential tar pkg-config gnutls-bin libgnutls28-dev certbot wget
 RUN wget https://github.com/inspircd/inspircd/archive/v3.6.0.tar.gz
