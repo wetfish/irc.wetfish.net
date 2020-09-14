@@ -11,7 +11,7 @@ services:
     networks:
       - app-network
   inspircd:
-    image: inspircd:latest
+    image: yams1/devfish_inspircd:initial
     volumes:
       - ./inspircd/conf:/inspircd/conf
     ports:
@@ -19,9 +19,9 @@ services:
     networks:
       - app-network
   thelounge:
-    image: thelounge:latest
+    image: yams1/devfish_thelounge:initial
     volumes:
-      - ./thelounge/conf/public:/thelounge/.thelounge
+      - ./thelounge/conf/public/config.js:/thelounge/.thelounge/config.js
       - ./thelounge/conf/private:/thelounge/.thelounge/private
       - ./thelounge/conf/public/themes:/thelounge/thelounge/public/themes
     ports:
