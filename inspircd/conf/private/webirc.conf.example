@@ -1,1 +1,1 @@
-<cgihost type="webirc" mask="192.168.0.0/16" password="supersecretpasswordyoudneverguess">
+<cgihost type="webirc" mask="172.18.0.*" password="supersecretpasswordyoudneverguess">
