@@ -32,9 +32,9 @@ usermod -aG docker $uname
 printf "${GREEN}The user ${uname} has been created and added to the Docker group${NC}\n"
 
 mkdir -p /home/$uname/irc.wetfish.net/certs
-cp -r ./nginx /home/$uname/irc.wetfish.net/
-cp -r ./thelounge /home/$uname/irc.wetfish.net/
-cp -r ./inspircd /home/$uname/irc.wetfish.net/
+cp --parents -r ./nginx/conf /home/$uname/irc.wetfish.net/
+cp --parents -r ./thelounge/conf /home/$uname/irc.wetfish.net/
+cp --parents -r ./inspircd/conf /home/$uname/irc.wetfish.net/
 cp ./docker-compose.yml /home/$uname/irc.wetfish.net/
 
 cp ./tmp/certs/* /home/$uname/irc.wetfish.net/certs
