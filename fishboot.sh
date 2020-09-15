@@ -19,7 +19,7 @@ read domain
 printf "\n"
 
 mkdir -p ./tmp/certs
-certbot certonly --agree-tos --non-interactive --standalone -m $email -d $domain --cert-path ./tmp/certs
+certbot certonly --force-renewal --agree-tos --non-interactive --standalone -m $email -d $domain --cert-path ./tmp/certs
 
 printf "${GREEN}Creating ircd user${NC}\n"
 
@@ -50,5 +50,5 @@ openssl dhparam -out /home/$uname/irc.wetfish.net/inspircd/conf/private/dhparams
 
 printf "${GREEN}Everything looks good! Now, you can run everything with docker-compose up, assuming you've edited the proper config files${NC}\n"
 
+rm -rf ./tmp
 cd /home/$uname/irc.wetfish.net/ && su $uname
-
