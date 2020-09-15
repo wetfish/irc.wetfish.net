@@ -1,42 +1,54 @@
 #!/bin/bash
 
+if [[ $EUID -ne 0 ]]; then
+	echo "This script must be run as root" 1>&2
+	exit 1
+fi
+
 GREEN='\033[0;32m'
 NC='\033[0m'
+uname='ircd'
 
-printf "${GREEN}Hi! I'm an interactive bootstrap script, but you can call me Fishboot. I'm gonna help you get set up :)${NC}\n"
-printf "${GREEN}Please enter the name of the unprivileged user you'd like to create${NC}\n"
+apt-get install -y docker docker-compose certbot
 
-read uname
+printf "${GREEN}Running certbot.\nPlease enter an email address: ${NC}"
+read email
+printf "\n"
+printf "${GREEN}Please enter the domain name for this server: ${NC}"
+read domain
+printf "\n"
 
-adduser $uname --uid 1337 && usermod -aG docker $uname
+mkdir -p ./tmp/certs
+certbot certonly --agree-tos --non-interactive --standalone -m $email -d $domain --cert-path ./tmp/certs
 
-printf "${GREEN}" "The user"  $uname "has been created and added to the Docker group${NC}\n"
-printf "${GREEN}Let me clone the ircd repo for you real quick!${NC}\n"
+printf "${GREEN}Creating ircd user${NC}\n"
 
-git -C /home/$uname/ clone -b feature/docker-compose https://github.com/wetfish/irc.wetfish.net/
+id $uname
+if [[ $? -eq 0 ]]; then
+	adduser $uname
+fi
+usermod -aG docker $uname
 
-printf "${GREEN}Please point me to the folder where fullchain.pem and privkey.pem live${NC}\n"
-printf "${GREEN}For example, if you used certbot, your certs may lie in /etc/letsencrypt/live/subdomain.wetfish.net${NC}\n"
+printf "${GREEN}The user ${uname} has been created and added to the Docker group${NC}\n"
 
-read certfolder
+mkdir -p /home/$uname/irc.wetfish.net/certs
+cp -r ./nginx /home/$uname/irc.wetfish.net/
+cp -r ./thelounge /home/$uname/irc.wetfish.net/
+cp -r ./inspircd /home/$uname/irc.wetfish.net/
+cp ./docker-compose.yml /home/$uname/irc.wetfish.net/
 
-printf "${GREEN}Fishboot here, I'm copying those files over for you and doing a little ownership/permission changing to make things easier${NC}\n"
-
-mkdir /home/$uname/irc.wetfish.net/certs
-cp $certfolder/* /home/$uname/irc.wetfish.net/certs
-chown -Rv $uname:$uname /home/$uname/irc.wetfish.net
-chmod -Rv u=rw,og=r,a+X /home/$uname/irc.wetfish.net/
+cp ./tmp/certs/* /home/$uname/irc.wetfish.net/certs
+chown -R $uname:$uname /home/$uname/irc.wetfish.net
+chmod -R u=rw,og=r,a+X /home/$uname/irc.wetfish.net/
 cp /home/$uname/irc.wetfish.net/certs/fullchain.pem /home/$uname/irc.wetfish.net/inspircd/conf/private/fullchain.pem
 cp /home/$uname/irc.wetfish.net/certs/privkey.pem /home/$uname/irc.wetfish.net/inspircd/conf/private/privkey.pem
 cp /home/$uname/irc.wetfish.net/certs/fullchain.pem /home/$uname/irc.wetfish.net/thelounge/conf/private/fullchain.pem
 cp /home/$uname/irc.wetfish.net/certs/privkey.pem /home/$uname/irc.wetfish.net/thelounge/conf/private/privkey.pem
 
-printf "${GREEN}Now that that's all done I'm gonna go ahead and build those Docker images for you!${NC}\n"
-
-docker build . -t thelounge:latest -f /home/$uname/irc.wetfish.net/thelounge/Dockerfile
-docker build . -t inspircd:latest -f /home/$uname/irc.wetfish.net/inspircd/Dockerfile
+printf "${GREEN}Generating dhparams..${NC}\n"
+openssl dhparam -out /home/$uname/irc.wetfish.net/inspircd/conf/private/dhparams.pem 2048
 
 printf "${GREEN}Everything looks good! Now, you can run everything with docker-compose up, assuming you've edited the proper config files${NC}\n"
-printf "${GREEN}Fishboot out, peace!${NC}\n"
 
 cd /home/$uname/irc.wetfish.net/ && su $uname
+
