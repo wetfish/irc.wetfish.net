@@ -1,4 +1,10 @@
- server {
+server {
+    listen 8080;
+    server_name your.website.tld;
+    return 301 https://your.website.tld$request_uri;
+}
+
+server {
     server_name your.website.tld;
     listen       8443 ssl;
 
