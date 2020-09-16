@@ -18,7 +18,6 @@ printf "${GREEN}Please enter the domain name for this server: ${NC}"
 read domain
 printf "\n"
 
-mkdir -p ./tmp/certs
 certbot certonly --force-renewal --agree-tos --non-interactive --standalone -m $email -d $domain --cert-path ./tmp/certs
 
 printf "${GREEN}Creating ircd user${NC}\n"
@@ -37,7 +36,7 @@ cp --parents -r ./thelounge/conf /home/$uname/irc.wetfish.net/
 cp --parents -r ./inspircd/conf /home/$uname/irc.wetfish.net/
 cp ./docker-compose.yml /home/$uname/irc.wetfish.net/
 
-cp ./tmp/certs/* /home/$uname/irc.wetfish.net/certs
+cp /etc/letsencrypt/live/$domain/* /home/$uname/irc.wetfish.net/certs
 chown -R $uname:$uname /home/$uname/irc.wetfish.net
 chmod -R u=rw,og=r,a+X /home/$uname/irc.wetfish.net/
 cp /home/$uname/irc.wetfish.net/certs/fullchain.pem /home/$uname/irc.wetfish.net/inspircd/conf/private/fullchain.pem
