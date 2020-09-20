@@ -6,3 +6,4 @@
 
 *.conf
 secrets.js
+config.sh

@@ -5,49 +5,61 @@ if [[ $EUID -ne 0 ]]; then
 	exit 1
 fi
 
+source config.sh
+
+if [[ -z "$name" ]]; then
+	echo "Please enter a username for the docker user: "
+	read name
+fi
+
+if [[ -z "$domain" ]]; then
+	echo "Please enter the domain name for this server: "
+	read domain
+fi
+
+if [[ -z "$email" ]]; then
+	echo "Please enter the email address for the certificate: "
+	read email
+fi
+
 GREEN='\033[0;32m'
 NC='\033[0m'
-uname='ircd'
 
 apt-get install -y docker docker-compose certbot
 
-printf "${GREEN}Running certbot.\nPlease enter an email address: ${NC}"
-read email
-printf "\n"
-printf "${GREEN}Please enter the domain name for this server: ${NC}"
-read domain
-printf "\n"
-
 certbot certonly --force-renewal --agree-tos --non-interactive --standalone -m $email -d $domain --cert-path ./tmp/certs
 
-printf "${GREEN}Creating ircd user${NC}\n"
+printf "${GREEN}Creating ${name} user${NC}\n"
 
-id $uname
+id $name
 if [[ $? -eq 0 ]]; then
-	adduser $uname
+	adduser $name
 fi
-usermod -aG docker $uname
+usermod -aG docker $name
 
-printf "${GREEN}The user ${uname} has been created and added to the Docker group${NC}\n"
+printf "${GREEN}The user ${name} has been created and added to the Docker group${NC}\n"
 
-mkdir -p /home/$uname/irc.wetfish.net/certs
-cp --parents -r ./nginx/conf /home/$uname/irc.wetfish.net/
-cp --parents -r ./thelounge/conf /home/$uname/irc.wetfish.net/
-cp --parents -r ./inspircd/conf /home/$uname/irc.wetfish.net/
-cp ./docker-compose.yml /home/$uname/irc.wetfish.net/
+mkdir -p /home/$name/irc.wetfish.net/certs
+cp --parents -r ./nginx/conf /home/$name/irc.wetfish.net/
+cp --parents -r ./thelounge/conf /home/$name/irc.wetfish.net/
+cp --parents -r ./inspircd/conf /home/$name/irc.wetfish.net/
+cp ./docker-compose.yml /home/$name/irc.wetfish.net/
 
-cp /etc/letsencrypt/live/$domain/* /home/$uname/irc.wetfish.net/certs
-chown -R $uname:$uname /home/$uname/irc.wetfish.net
-chmod -R u=rw,og=r,a+X /home/$uname/irc.wetfish.net/
-cp /home/$uname/irc.wetfish.net/certs/fullchain.pem /home/$uname/irc.wetfish.net/inspircd/conf/private/fullchain.pem
-cp /home/$uname/irc.wetfish.net/certs/privkey.pem /home/$uname/irc.wetfish.net/inspircd/conf/private/privkey.pem
-cp /home/$uname/irc.wetfish.net/certs/fullchain.pem /home/$uname/irc.wetfish.net/thelounge/conf/private/fullchain.pem
-cp /home/$uname/irc.wetfish.net/certs/privkey.pem /home/$uname/irc.wetfish.net/thelounge/conf/private/privkey.pem
+cp /etc/letsencrypt/live/$domain/* /home/$name/irc.wetfish.net/certs
+chown -R $name:$uname /home/$name/irc.wetfish.net
+chmod -R u=rw,og=r,a+X /home/$name/irc.wetfish.net/
+cp /home/$name/irc.wetfish.net/certs/fullchain.pem /home/$name/irc.wetfish.net/inspircd/conf/private/fullchain.pem
+cp /home/$name/irc.wetfish.net/certs/privkey.pem /home/$name/irc.wetfish.net/inspircd/conf/private/privkey.pem
+cp /home/$name/irc.wetfish.net/certs/fullchain.pem /home/$name/irc.wetfish.net/thelounge/conf/private/fullchain.pem
+cp /home/$name/irc.wetfish.net/certs/privkey.pem /home/$name/irc.wetfish.net/thelounge/conf/private/privkey.pem
 
-printf "${GREEN}Generating dhparams..${NC}\n"
-openssl dhparam -out /home/$uname/irc.wetfish.net/inspircd/conf/private/dhparams.pem 2048
+printf "${GREEN}Generating DH parameters..${NC}\n"
+openssl dhparam -out /home/$name/irc.wetfish.net/inspircd/conf/private/dhparams.pem 2048
+
+printf "${GREEN}Setting up crontab${NC}\n"
+crontab -l | cat; echo "0 0 * * * certbot renew --deploy-hook \"~/irc.wetfish.net/cronjob.sh\"" | crontab -
 
 printf "${GREEN}Everything looks good! Now, you can run everything with docker-compose up, assuming you've edited the proper config files${NC}\n"
 
 rm -rf ./tmp
-cd /home/$uname/irc.wetfish.net/ && su $uname
+cd /home/$name/irc.wetfish.net/ && su $name
