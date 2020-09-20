@@ -46,7 +46,7 @@ cp --parents -r ./inspircd/conf /home/$name/irc.wetfish.net/
 cp ./docker-compose.yml /home/$name/irc.wetfish.net/
 
 cp /etc/letsencrypt/live/$domain/* /home/$name/irc.wetfish.net/certs
-chown -R $name:$uname /home/$name/irc.wetfish.net
+chown -R $name:$name /home/$name/irc.wetfish.net
 chmod -R u=rw,og=r,a+X /home/$name/irc.wetfish.net/
 cp /home/$name/irc.wetfish.net/certs/fullchain.pem /home/$name/irc.wetfish.net/inspircd/conf/private/fullchain.pem
 cp /home/$name/irc.wetfish.net/certs/privkey.pem /home/$name/irc.wetfish.net/inspircd/conf/private/privkey.pem
