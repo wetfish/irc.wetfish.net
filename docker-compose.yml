@@ -11,7 +11,7 @@ services:
     networks:
       - app-network
   inspircd:
-    image: yams1/devfish_inspircd:initial
+    image: fishnet/inspircd:latest
     volumes:
       - ./inspircd/conf:/inspircd/conf
     ports:
@@ -19,7 +19,7 @@ services:
     networks:
       - app-network
   thelounge:
-    image: yams1/devfish_thelounge:initial
+    image: fishnet/thelounge:latest
     volumes:
       - ./thelounge/conf/public/config.js:/thelounge/.thelounge/config.js
       - ./thelounge/conf/private:/thelounge/.thelounge/private
