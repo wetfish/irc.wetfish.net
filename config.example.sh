@@ -1,4 +1,4 @@
 #!/bin/bash
 name='user'
-domain='domain'
+domain=('domain' 'optional' 'domains')
 email='admin@domain.com'
