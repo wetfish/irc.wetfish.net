@@ -62,5 +62,4 @@ crontab -l | cat; echo "0 0 * * * certbot renew --deploy-hook \"/root/irc.wetfis
 
 printf "${GREEN}Everything looks good! Now, you can run everything with docker-compose up, assuming you've edited the proper config files${NC}\n"
 
-rm -rf ./tmp
 cd /home/$name/irc.wetfish.net/ && su $name
