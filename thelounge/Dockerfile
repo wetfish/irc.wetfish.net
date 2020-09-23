@@ -1,5 +1,5 @@
 FROM debian:buster
-MAINTAINER Fumiko (fumikoh@pm.me)
+MAINTAINER Yam (yam@wetfish.net)
 RUN apt update && apt-get install -y apt-transport-https
 RUN apt-get -y install gnutls-bin certbot nodejs npm curl
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
