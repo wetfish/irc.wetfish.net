@@ -2,15 +2,17 @@
 
 This has been tested and run on Debian 10 systems, dependencies may differ with other distros and/or versions
 
-## Dependencies
-Run ``sudo apt install docker docker-compose certbot git``
+#### Instructions
+1. Clone this repo:   
+`git clone https://github.com/wetfish/irc.wetfish.net.git; cd irc.wetfish.net`
 
-If you don't already have certs, run ``certbot certonly``
+2. Rename config.sh.example to config.sh and modify the values:  
+`cp config.sh.example config.sh; nano config.sh`
 
-#### Initial setup - don't clone the repo, fishboot does it for you!
-Grab fishboot.sh and make it executable with ``chmod +x fishboot.sh``, then run it with ``sudo ./fishboot.sh``
+3. Execute install.sh:  
+`./install.sh`
 
 #### Edting file configurations
 You'll want to edit and rename the InspIRCd, TheLounge, and Nginx private subdirectory config files to match your needs.
 
-#### Everything can now be run from ~/irc.wetfish.net with ``docker-compose up``
+#### Everything can now be run from the install users ~/irc.wetfish.net with ``docker-compose up``
