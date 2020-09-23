@@ -58,7 +58,7 @@ printf "${GREEN}Generating DH parameters..${NC}\n"
 openssl dhparam -out /home/$name/irc.wetfish.net/inspircd/conf/private/dhparams.pem 2048
 
 printf "${GREEN}Setting up crontab${NC}\n"
-crontab -l | cat; echo "0 0 * * * certbot renew --deploy-hook \"/root/irc.wetfish.net/cronjob.sh\"" | crontab -
+crontab -l | cat; echo "0 0 * * * (cd $PWD && certbot renew --deploy-hook \"$PWD/cronjob.sh\")" | crontab -
 
 printf "${GREEN}Everything looks good! Now, you can run everything with docker-compose up, assuming you've edited the proper config files${NC}\n"
 

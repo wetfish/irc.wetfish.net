@@ -5,7 +5,7 @@
 # This script runs on initial install and after a certbot renewal succeeds
 # and means you won't have to worry about restarting services manually to enable updated certificates
 
-source /root/irc.wetfish.net/config.sh
+source config.sh
 
 # delete the old certs..
 rm -rf /home/$name/irc.wetfish.net/certs/*
