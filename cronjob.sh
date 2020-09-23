@@ -22,3 +22,7 @@ cp /home/$name/irc.wetfish.net/certs/fullchain.pem /home/$name/irc.wetfish.net/i
 cp /home/$name/irc.wetfish.net/certs/privkey.pem /home/$name/irc.wetfish.net/inspircd/conf/private/privkey.pem
 cp /home/$name/irc.wetfish.net/certs/fullchain.pem /home/$name/irc.wetfish.net/thelounge/conf/private/fullchain.pem
 cp /home/$name/irc.wetfish.net/certs/privkey.pem /home/$name/irc.wetfish.net/thelounge/conf/private/privkey.pem
+
+# Rehash.
+docker exec `docker ps -aqf "name=ircwetfishnet_inspircd"` ./inspircd rehash
+docker restart `docker ps -aqf "name=ircwetfishnet_nginx"`
