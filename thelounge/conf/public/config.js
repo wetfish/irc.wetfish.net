@@ -26,7 +26,7 @@ module.exports = {
 	// For UNIX domain sockets, use `"unix:/absolute/path/to/file.sock"`.
 	//
 	// This value is set to `undefined` by default to listen on all interfaces.
-	host: undefined,
+	host: "thelounge",
 
 	// ### `port`
 	//
@@ -78,9 +78,9 @@ module.exports = {
 	// The value of `enable` is set to `false` to disable HTTPS by default, in
 	// which case the other two string settings are ignored.
 	https: {
-		enable: true,
-		key: "/thelounge/.thelounge/private/privkey.pem",
-		certificate: "/thelounge/.thelounge/private/fullchain.pem",
+		enable: false,
+		key: "",
+		certificate: "",
 		ca: "",
 	},
 

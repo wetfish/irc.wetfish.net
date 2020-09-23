@@ -18,7 +18,7 @@ server {
     ssl_prefer_server_ciphers  on;
 
     location / {
-    proxy_pass https://thelounge:9000/;
+    proxy_pass http://thelounge:9000/;
     proxy_http_version 1.1;
     proxy_set_header Connection "upgrade";
     proxy_set_header Upgrade $http_upgrade;
