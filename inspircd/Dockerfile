@@ -1,5 +1,5 @@
 FROM debian:buster
-MAINTAINER Fumiko (fumikoh@pm.me)
+MAINTAINER Fumiko (yam@wetfish.net)
 RUN apt update && apt-get install -y apt-transport-https
 RUN apt-get -y install wget build-essential tar pkg-config gnutls-bin libgnutls28-dev certbot wget
 RUN wget https://github.com/inspircd/inspircd/archive/v3.6.0.tar.gz
@@ -12,7 +12,7 @@ RUN make
 RUN make install
 USER inspircd
 EXPOSE 6667 6697 7000 7001 7005
-ENTRYPOINT ["/inspircd/bin/inspircd", "--config", "/inspircd/conf/public/inspircd.conf", "--nofork"]
+ENTRYPOINT ["/inspircd/bin/inspircd", "--nofork"]
 WORKDIR /inspircd
 USER root
 RUN chmod -R 644 /inspircd/conf

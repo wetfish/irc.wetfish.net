@@ -4,6 +4,6 @@
 *.pem
 *.pid
 
-*.conf
+*/conf/private/*.conf
 secrets.js
 config.sh
