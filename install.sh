@@ -7,19 +7,9 @@ fi
 
 source config.sh
 
-if [[ -z "$name" ]]; then
-	echo "Please enter a username for the docker user: "
-	read name
-fi
-
-if [[ -z "$domain" ]]; then
-	echo "Please enter the domain name for this server: "
-	read domain
-fi
-
-if [[ -z "$email" ]]; then
-	echo "Please enter the email address for the certificate: "
-	read email
+if [ -z "$name" ] || [ -z "$domain" ] || [ -z "$email" ]; then
+	echo -e "\033[0;31mMissing configuration options, please modify config.sh\033[0m"
+	exit
 fi
 
 GREEN='\033[0;32m'
