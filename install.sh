@@ -22,11 +22,7 @@ certbot certonly --force-renewal --agree-tos --non-interactive --standalone -m $
 
 printf "${GREEN}Creating ${name} user${NC}\n"
 
-id $name
-if [[ $? -eq 0 ]]; then
-	adduser --disabled-password --gecos "" $name
-fi
-usermod -aG docker $name
+adduser --disabled-password --gecos "" $name && usermod -aG docker $name
 
 printf "${GREEN}The user ${name} has been created and added to the Docker group${NC}\n"
 
