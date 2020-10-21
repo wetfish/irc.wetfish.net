@@ -24,7 +24,7 @@ printf "${GREEN}Creating ${name} user${NC}\n"
 
 id $name
 if [[ $? -eq 0 ]]; then
-	adduser $name
+	adduser --disabled-password --gecos "" $name
 fi
 usermod -aG docker $name
 
