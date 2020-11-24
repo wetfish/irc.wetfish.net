@@ -1,3 +1,9 @@
-conf-private
+/inspircd/data/permchannels.conf
 .conf-old
 *.tmp
+*.pem
+*.pid
+
+*/conf/private/*.conf
+secrets.js
+config.sh

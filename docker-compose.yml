@@ -1,0 +1,33 @@
+version: '3'
+services:
+  nginx:
+    image: bitnami/nginx
+    volumes:
+      - ./nginx/conf/private/server_block.conf:/opt/bitnami/nginx/conf/server_blocks/my_server_block.conf:ro
+      - ./certs:/certs
+    ports:
+      - "80:8080"
+      - "443:8443"
+    networks:
+      - app-network
+  inspircd:
+    image: fishnet/inspircd:latest
+    volumes:
+      - ./inspircd/conf:/inspircd/conf
+    ports:
+      - "6697:6697"
+    networks:
+      - app-network
+  thelounge:
+    image: fishnet/thelounge:latest
+    volumes:
+      - ./thelounge/conf/public/config.js:/thelounge/.thelounge/config.js
+      - ./thelounge/conf/private:/thelounge/.thelounge/private
+      - ./thelounge/conf/public/themes:/thelounge/thelounge/public/themes
+    ports:
+      - "9000:9000"
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge
