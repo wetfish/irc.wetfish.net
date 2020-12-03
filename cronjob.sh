@@ -24,5 +24,5 @@ cp /home/$name/irc.wetfish.net/certs/fullchain.pem /home/$name/irc.wetfish.net/t
 cp /home/$name/irc.wetfish.net/certs/privkey.pem /home/$name/irc.wetfish.net/thelounge/conf/private/privkey.pem
 
 # Rehash.
-docker exec `docker ps -aqf "name=ircwetfishnet_inspircd"` ./inspircd rehash
+docker kill --signal=SIGUSR1 `docker ps -aqf "name=ircwetfishnet_inspircd"`
 docker restart `docker ps -aqf "name=ircwetfishnet_nginx"`
