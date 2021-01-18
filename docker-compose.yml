@@ -29,5 +29,8 @@ services:
     networks:
       - app-network
 networks:
-  app-network:
-    driver: bridge
+    app-network:
+      driver: bridge
+      ipam:
+          config:
+             - subnet: "172.50.0.0/16"
