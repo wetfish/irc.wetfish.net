@@ -1,19 +1,29 @@
 FROM debian:buster
-MAINTAINER Yam (yam@wetfish.net)
-RUN apt update && apt-get install -y apt-transport-https
-RUN apt-get -y install wget build-essential tar pkg-config gnutls-bin libgnutls28-dev certbot wget
-RUN wget https://github.com/inspircd/inspircd/archive/v3.6.0.tar.gz
-RUN tar -xvf v3.6.0.tar.gz
+#MAINTAINER Yam (yam@wetfish.net)
+
+RUN apt update && apt-get install -y \
+	apt-transport-https \
+	wget \
+	build-essential \
+	tar \
+	pkg-config \
+	gnutls-bin \
+	libgnutls28-dev \
+	certbot \
+	&& wget -O - https://github.com/inspircd/inspircd/archive/v3.6.0.tar.gz | tar zxf - \
+	&& rm -rf /var/lib/apt/lists/*
+
 WORKDIR inspircd-3.6.0/
 RUN addgroup --system --gid 10000 inspircd
 RUN adduser --system --uid 10000 --home /inspircd/ --group inspircd
-RUN ./configure --prefix /inspircd --uid 10000 --gid 10000
-RUN make
-RUN make install
-USER inspircd
-EXPOSE 6667 6697 7000 7001 7005
-ENTRYPOINT ["/inspircd/bin/inspircd", "--nofork"]
+RUN ./configure --prefix /inspircd --uid 10000 --gid 10000 \
+	&& make \
+	&& make install \
+	&& chmod -R 644 /inspircd/conf \
+	&& make clean
+
 WORKDIR /inspircd
-USER root
-RUN chmod -R 644 /inspircd/conf
+
+EXPOSE 6667 6697 7000 7001 7005
 USER inspircd
+ENTRYPOINT ["/inspircd/bin/inspircd", "--nofork"]
