@@ -14,6 +14,8 @@ services:
     image: fishnet/inspircd:latest
     volumes:
       - ./inspircd/conf:/inspircd/conf
+      - ./certs/fullchain.pem:/inspircd/conf/private/fullchain.pem
+      - ./certs/privkey.pem:/inspircd/conf/private/privkey.pem
     ports:
       - "6697:6697"
     networks:

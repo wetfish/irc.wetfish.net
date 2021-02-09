@@ -1,5 +1,5 @@
 FROM debian:buster
-#MAINTAINER Yam (yam@wetfish.net)
+MAINTAINER Yam (yam@wetfish.net)
 
 RUN apt update && apt-get install -y \
 	apt-transport-https \
@@ -26,4 +26,7 @@ WORKDIR /inspircd
 
 EXPOSE 6667 6697 7000 7001 7005
 USER inspircd
-ENTRYPOINT ["/inspircd/bin/inspircd", "--nofork"]
+
+ENTRYPOINT ["/inspircd/bin/inspircd"]
+
+CMD [ "--nofork"]
