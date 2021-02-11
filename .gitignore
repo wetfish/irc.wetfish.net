@@ -7,3 +7,4 @@
 */conf/private/*.conf
 secrets.js
 config.sh
+certs/
