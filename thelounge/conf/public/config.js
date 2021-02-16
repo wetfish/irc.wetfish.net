@@ -227,7 +227,7 @@ module.exports = {
 	// ```
 	defaults: {
 		name: "FishNet",
-		host: "irc.wetfish.net",
+		host: secrets.hostname,
 		port: 6697,
 		password: "",
 		tls: true,
