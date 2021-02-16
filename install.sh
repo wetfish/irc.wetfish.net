@@ -31,7 +31,8 @@ cp -r ./ /home/$name/irc.wetfish.net/
 
 cp /etc/letsencrypt/live/$domain/* /home/$name/irc.wetfish.net/certs
 chown -R $name:$name /home/$name/irc.wetfish.net
-chmod -R u=rw,og=r,a+X /home/$name/irc.wetfish.net/
+# Make privkey readable by docker
+chmod 644 /home/$name/irc.wetfish.net/certs/privkey.pem
 cp /home/$name/irc.wetfish.net/certs/fullchain.pem /home/$name/irc.wetfish.net/inspircd/conf/private/fullchain.pem
 cp /home/$name/irc.wetfish.net/certs/privkey.pem /home/$name/irc.wetfish.net/inspircd/conf/private/privkey.pem
 cp /home/$name/irc.wetfish.net/certs/fullchain.pem /home/$name/irc.wetfish.net/thelounge/conf/private/fullchain.pem
