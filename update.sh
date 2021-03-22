@@ -8,7 +8,9 @@ rm -rf /etc/letsencrypt/live/*
 rm -rf /etc/letsencrypt/archive/*
 rm -rf /etc/letsencrypt/renewal/*
 #certbot delete -n --cert-name ${domain[@]}
-certbot certonly --force-renewal --agree-tos --non-interactive --standalone -m $email -d ${joined_domains%-d }
+
+acquire_certs
+
 ./cronjob.sh
 
 ## Todo: add acme-dns support

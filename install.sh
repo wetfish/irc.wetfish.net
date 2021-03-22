@@ -9,7 +9,7 @@ NC='\033[0m'
 
 apt-get install -y docker docker-compose certbot
 
-certbot certonly --force-renewal --agree-tos --non-interactive --standalone -m $email -d ${joined_domains%-d }
+acquire_certs
 
 printf "${GREEN}Creating ${name} user${NC}\n"
 

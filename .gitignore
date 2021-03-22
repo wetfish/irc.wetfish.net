@@ -8,3 +8,4 @@
 secrets.js
 config.sh
 certs/
+acmedns/config/config.cfg
