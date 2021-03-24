@@ -2,6 +2,7 @@ version: '2'
 services:
   acmedns:
     image: joohoi/acme-dns:latest
+    restart: always
     ports:
       - "443:443"
       - "53:53"
