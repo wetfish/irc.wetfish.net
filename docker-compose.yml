@@ -2,6 +2,7 @@ version: '3'
 services:
   nginx:
     image: bitnami/nginx
+    restart: always
     volumes:
       - ./nginx/conf/private/server_block.conf:/opt/bitnami/nginx/conf/server_blocks/my_server_block.conf:ro
       - ./certs:/certs
@@ -12,6 +13,7 @@ services:
       - app-network
   inspircd:
     image: fishnet/inspircd:latest
+    restart: always
     volumes:
       - ./inspircd/conf:/inspircd/conf
     ports:
@@ -20,6 +22,7 @@ services:
       - app-network
   thelounge:
     image: fishnet/thelounge:latest
+    restart: always
     volumes:
       - ./thelounge/conf/public/config.js:/thelounge/.thelounge/config.js
       - ./thelounge/conf/private:/thelounge/.thelounge/private
