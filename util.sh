@@ -17,7 +17,7 @@ fi
 
 if [ ! -z "$acmehost" ]; then
     if [ ! -f /etc/letsencrypt/acme-dns-auth.py ]; then 
-        curl -o /etc/letsencrypt/acme-dns-auth.py https://raw.githubusercontent.com/joohoi/acme-dns-certbot-joohoi/master/acme-dns-auth.py
+        curl -o --create-dirs /etc/letsencrypt/acme-dns-auth.py https://raw.githubusercontent.com/joohoi/acme-dns-certbot-joohoi/master/acme-dns-auth.py
         chmod 0700 /etc/letsencrypt/acme-dns-auth.py
     fi
     usingAcmeDns=true;
