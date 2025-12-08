@@ -13,7 +13,7 @@
 ###############################################################################
 FROM --platform=linux/amd64 debian:bookworm-slim
 
-LABEL maintainer="cyba <eva.evergreene@protonmail.com>"
+LABEL maintainer="cybaxx"
 
 ###############################################################################
 # INSTALL RUNTIME DEPENDENCIES ONLY
