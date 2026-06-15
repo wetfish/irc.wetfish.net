@@ -1,0 +1,82 @@
+services:
+  hub:
+    image: inspircd/inspircd-docker:3
+    platform: linux/amd64
+    ports:
+      - "6667:6667"
+    volumes:
+      - ./inspircd/conf/hub.conf:/inspircd/conf/inspircd.conf
+      - ./inspircd/conf/common.conf:/inspircd/conf/common.conf
+      - ./inspircd/conf/motd.txt:/inspircd/conf/motd.txt
+    networks:
+      - irc
+    healthcheck:
+      test: ["CMD-SHELL", "ss -tlnp 2>/dev/null | grep -q :6667 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  leaf1:
+    image: inspircd/inspircd-docker:3
+    platform: linux/amd64
+    ports:
+      - "6668:6667"
+    volumes:
+      - ./inspircd/conf/leaf1.conf:/inspircd/conf/inspircd.conf
+      - ./inspircd/conf/common.conf:/inspircd/conf/common.conf
+      - ./inspircd/conf/motd.txt:/inspircd/conf/motd.txt
+    depends_on:
+      hub:
+        condition: service_healthy
+    networks:
+      - irc
+    healthcheck:
+      test: ["CMD-SHELL", "ss -tlnp 2>/dev/null | grep -q :6667 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  leaf2:
+    image: inspircd/inspircd-docker:3
+    platform: linux/amd64
+    ports:
+      - "6669:6667"
+    volumes:
+      - ./inspircd/conf/leaf2.conf:/inspircd/conf/inspircd.conf
+      - ./inspircd/conf/common.conf:/inspircd/conf/common.conf
+      - ./inspircd/conf/motd.txt:/inspircd/conf/motd.txt
+    depends_on:
+      hub:
+        condition: service_healthy
+    networks:
+      - irc
+    healthcheck:
+      test: ["CMD-SHELL", "ss -tlnp 2>/dev/null | grep -q :6667 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  thelounge:
+    image: thelounge/thelounge:4
+    platform: linux/amd64
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./thelounge/conf:/var/opt/thelounge
+    depends_on:
+      hub:
+        condition: service_healthy
+    networks:
+      - irc
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:9000 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+networks:
+  irc:

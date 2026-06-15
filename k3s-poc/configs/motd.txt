@@ -1,0 +1,6 @@
+Welcome to Wetfish IRC — Multi-DC Kubernetes Demo
+
+You are connected to the Wetfish network spanning US and EU regions.
+Each region runs its own hub with 3 leaf servers (8 IRC servers total).
+
+/join #wetfish to chat!

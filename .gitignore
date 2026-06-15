@@ -1,0 +1,14 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+*.log
+
+# k3s / k3d
+kubeconfig.*
+
+# Secrets (generate locally, never commit)
+inspircd/conf/cert.pem
+inspircd/conf/key.pem
+inspircd/conf/dhparams.pem
