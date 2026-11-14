@@ -1,9 +1,13 @@
-#-#-#-#-#-#-#-#-#-#-#-#-  CLASS CONFIGURATION   -#-#-#-#-#-#-#-#-#-#-#-
+#-#-#-#-#-#-#-#-#-#-#-#-  CLASS CONFIGURATION   -#-#-#-#-#-#-#-#-#-#-#
 #                                                                     #
 #   Classes are a group of commands which are grouped together and    #
 #   given a unique name. They're used to define which commands        #
 #   are available to certain types of Operators.                      #
 #                                                                     #
+#   Commands and privileges are separate. Being allowed to run a      #
+#   command does not always mean an oper can use all of it: some      #
+#   commands also check for a privilege listed in "privs" (for        #
+#   example /SAJOIN on another user needs users/sajoin-others).       #
 #                                                                     #
 #  Note: It is possible to make a class which covers all available    #
 #  commands. To do this, specify commands="*". This is not really     #
@@ -15,23 +19,38 @@
      name="Shutdown"
 
      # commands: oper commands that users of this class can run.
-     commands="DIE RESTART REHASH LOADMODULE UNLOADMODULE RELOAD GUNLOADMODULE GRELOADMODULE SAJOIN SAPART SANICK SAQUIT SATOPIC"
+     commands="DIE RESTART REHASH LOADMODULE UNLOADMODULE RELOADMODULE GLOADMODULE GUNLOADMODULE GRELOADMODULE SAJOIN SAPART SANICK SAQUIT SATOPIC"
 
      # privs: special privileges that users with this class may utilise.
      #  VIEWING:
-     #   - channels/auspex: allows opers with this priv to see more detail about channels than normal users.
-     #   - users/auspex: allows opers with this priv to view more details about users than normal users.
-     #   - servers/auspex: allows opers with this priv to see more detail about server information than normal users.
-     # ACTIONS:
-     #   - users/mass-message: allows opers with this priv to PRIVMSG and NOTICE to a server mask (e.g. NOTICE $*)
+     #   - channels/auspex: allows opers with this priv to see more details about channels than normal users.
+     #   - users/auspex: allows opers with this priv to view more details about users than normal users, e.g. real host and IP.
+     #   - users/channel-spy: allows opers with this priv to view the private/secret channels that a user is on.
+     #   - servers/auspex: allows opers with this priv to see more details about server information than normal users.
+     #  ACTIONS:
+     #   - users/mass-message: allows opers with this priv to PRIVMSG and NOTICE to a server mask (e.g. NOTICE $*).
+     #   - users/sajoin-others: allows opers with this priv to /SAJOIN users other than themselves.
+     #   - users/samode-usermodes: allows opers with this priv to change the user modes of any other user using /SAMODE.
+     #  PERMISSIONS:
      #   - channels/high-join-limit: allows opers with this priv to join <channels:opers> total channels instead of <channels:users> total channels.
-     #   - channels/set-permanent: allows opers with this priv to set +P on channels with m_permchannels.
-     # PERMISSIONS:
-     #   - users/flood/no-throttle: allows opers with this priv to send commands without being throttled (*NOTE)
-     #   - users/flood/increased-buffers: allows opers with this priv to send and recieve data without worrying about being disconnected for exceeding limits (*NOTE)
+     #   - channels/ignore-noctcp: allows opers with this priv to send a CTCP to a +C channel.
+     #   - channels/ignore-nonicks: allows opers with this priv to change their nick when on a +N channel.
+     #   - channels/restricted-create: allows opers with this priv to create channels if the restrictchans module is loaded.
+     #   - users/flood/increased-buffers: allows opers with this priv to send and receive data without worrying about being disconnected for exceeding limits (*NOTE).
+     #   - users/flood/no-fakelag: prevents opers from being penalized with fake lag for flooding (*NOTE).
+     #   - users/flood/no-throttle: allows opers with this priv to send commands without being throttled (*NOTE).
+     #   - users/ignore-callerid: allows opers with this priv to message people using callerid without being on their callerid list.
+     #   - users/ignore-commonchans: allows opers with this priv to send a message to a +c user without sharing common channels.
+     #   - users/ignore-noctcp: allows opers with this priv to send a CTCP to a +T user.
+     #   - users/ignore-privdeaf: allows opers with this priv to message users with +D set.
+     #   - servers/ignore-shun: allows opers with this priv to ignore shuns.
+     #   - servers/use-disabled-commands: allows opers with this priv to use disabled commands.
+     #   - servers/use-disabled-modes: allows opers with this priv to use disabled modes.
      #
-     # *NOTE: These privs are potantially dangerous, as they grant users with them the ability to hammer your server's CPU/RAM as much as they want, essentially.
-     privs="users/auspex channels/auspex servers/auspex users/mass-message channels/high-join-limit channels/set-permanent users/flood/no-throttle users/flood/increased-buffers"
+     # Setting permanent channels (+P) is controlled by chanmodes below, not by a priv.
+     #
+     # *NOTE: These privs are potentially dangerous, as they grant users with them the ability to hammer your server's CPU/RAM as much as they want, essentially.
+     privs="users/auspex users/channel-spy channels/auspex servers/auspex users/mass-message channels/high-join-limit users/flood/no-throttle users/flood/increased-buffers"
 
      # usermodes: Oper-only usermodes that opers with this class can use.
      usermodes="*"
@@ -39,11 +58,11 @@
      # chanmodes: Oper-only channel modes that opers with this class can use.
      chanmodes="*">
 
-<class name="ServerLink" commands="CONNECT SQUIT CONNECT MKPASSWD ALLTIME SWHOIS CLOSE JUMPSERVER LOCKSERV" usermodes="*" chanmodes="*" privs="servers/auspex">
-<class name="BanControl" commands="KILL GLINE KLINE ZLINE QLINE ELINE TLINE RLINE CHECK NICKLOCK SHUN CLONES CBAN" usermodes="*" chanmodes="*">
+<class name="ServerLink" commands="CONNECT SQUIT RCONNECT RSQUIT MKPASSWD ALLTIME SWHOIS LOCKSERV UNLOCKSERV" usermodes="*" chanmodes="*" privs="servers/auspex">
+<class name="BanControl" commands="KILL GLINE KLINE ZLINE QLINE ELINE TLINE RLINE CHECK NICKLOCK NICKUNLOCK SHUN CLONES CBAN" usermodes="*" chanmodes="*">
 <class name="OperChat" commands="WALLOPS GLOBOPS SETIDLE" usermodes="*" chanmodes="*" privs="users/mass-message">
-<class name="HostCloak" commands="SETHOST SETIDENT SETNAME CHGHOST CHGIDENT TAXONOMY" usermodes="*" chanmodes="*" privs="users/auspex">
-<class name="SuperDuper" commands="SAMODE SANICK SAJOIN SAKICK SAPART SAQUIT SATOPIC *">
+<class name="HostCloak" commands="SETHOST SETIDENT SETNAME CHGHOST CHGIDENT CHGNAME" usermodes="*" chanmodes="*" privs="users/auspex">
+<class name="SuperDuper" commands="SAMODE SANICK SAJOIN SAKICK SAPART SAQUIT SATOPIC *" privs="users/sajoin-others users/samode-usermodes">
 
 
 #-#-#-#-#-#-#-#-#-#-#-#-  OPERATOR COMPOSITION   -#-#-#-#-#-#-#-#-#-#-#
@@ -79,34 +98,50 @@
 #   Opers are defined here. This is a very important section.         #
 #   Remember to only make operators out of trust worthy people.       #
 #                                                                     #
-
-# oline with plain-text password
-#<oper
-#      name="your_oper_name"
-#	  hash="sha256"
-#      password="your_password"
-#      host="*@localhost *@127.0.0.1"
-#	  vhost="your.vhost"
-#	  sslonly="yes"
-#      type="NetAdmin">
+#   Adding an oper:                                                   #
+#                                                                     #
+#   1. Generate a salted password hash on the server host:            #
+#                                                                     #
+#      python3 -c 'import base64,getpass,hashlib,hmac,os; p=getpass.getpass("New oper password: ").encode(); s=os.urandom(32); b=lambda x: base64.b64encode(x).decode().rstrip("="); print(b(s)+"$"+b(hmac.new(s,p,hashlib.sha256).digest()))'
+#                                                                     #
+#      This prints the same format as /MKPASSWD hmac-sha256 <pass>,   #
+#      without sending the plaintext password over IRC.               #
+#                                                                     #
+#   2. Copy the block below, set a unique name, the hash, the hosts   #
+#      the oper connects from (see /WHOIS), and one of the types      #
+#      above. Names and types are case sensitive.                     #
+#                                                                     #
+#   3. Rehash with: docker-compose kill -s SIGHUP inspircd            #
+#      (SIGUSR1 only reloads TLS certificates, not this file.)        #
+#                                                                     #
+#   Opers who are already opered up keep their old permissions until  #
+#   they /OPER again.                                                 #
+#                                                                     #
 
 <oper
+      # name: login used with /OPER <name> <password>.
       name="your_oper_name"
-      hash="sha256"
-      password="your_password"
+
+      # hash: hmac-sha256 is salted. Requires m_password_hash.so and
+      # m_sha256.so, which modules.conf loads.
+      hash="hmac-sha256"
+
+      # password: the hash generated in step 1, not the plaintext password.
+      password="your_generated_hash"
+
+      # host: space separated ident@host or ident@IP masks allowed to use
+      # this account. CIDR ranges work. Avoid *@*.
       host="*@localhost *@127.0.0.1"
+
+      # sslonly: only allow /OPER over a TLS connection.
+      sslonly="yes"
+
+      # fingerprint: optionally require a TLS client certificate fingerprint
+      # (shown by /SSLINFO). Space separate several fingerprints.
+      #fingerprint="your_certificate_fingerprint"
+
+      # vhost: optionally override the vhost from the type.
+      #vhost="your.vhost"
+
+      # type: one of the types defined above.
       type="NetAdmin">
-
-
-# oline with plain-text password
-#<oper
-#      name="your_oper_name"
-#      hash="sha256"
-#      password="your_password"
-#	password="your_password"
-#      host="*@localhost *@127.0.0.1"
-#	  vhost="your.vhost"
-#	  sslonly="yes"
-#      type="NetAdmin">
-#
-
